@@ -47,13 +47,13 @@ public class AStar {
             {
                 int key = _map.get(x + row);
 
-                if (key == 1 | key == 2)
+                if (key > 0) // blocker
                 {
                     Cell cell = new Cell(x, y, false);
                     cell.set_display("X");
                     _cells.add(cell);
                 }
-                else
+                else // walkable
                 {
                     Cell cell = new Cell(x, y, true);
                     cell.set_display("O");

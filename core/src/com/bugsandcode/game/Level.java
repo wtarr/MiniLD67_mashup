@@ -33,6 +33,10 @@ public class Level {
 
     private String _levelAsString;
 
+    public ArrayList<Block> getMap(){  return _map; }
+    public int getWidth() { return  _width; }
+    public int getHeight() { return _height; }
+
     public Level(int width, int height) {
 
         _width = width;
@@ -54,7 +58,7 @@ public class Level {
         _textureBlockTop = new Texture("block_top.png");
     }
 
-    private void buildMap(int numOfcol, int numOfrow, int texturewidth)
+    private void buildMap(  int numOfcol, int numOfrow, int texturewidth)
     {
 
         _map = new ArrayList<Block>();
@@ -71,31 +75,39 @@ public class Level {
         int row = 0;
 
         for (int y = (numOfrow - 1); y >= 0; y--)
+        // for (int y = 0; y < numOfrow; y++) // invert the coord system
         {
             for (int x = (numOfcol - 1); x >= 0; x--)
+            // for (int x = 0; x < numOfcol; x++)
             {
                 int key = maplist.get(x + row);
 
+                if (x == 1 && y == 2)
+                {
+                    System.out.println();
+                }
+
                 switch (key)
                 {
+
                     // tiled exports +1 for some dumb reason
                     case 1:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockMain));
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockMain, false));
                        break;
                     case 11:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockTop));
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockTop, false));
                         break;
                     case 17:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockLeft));
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockLeft, false));
                         break;
                     case 18:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockRight));
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockRight, false));
                         break;
                     case 19:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockBottom));
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockBottom, false));
                         break;
-
                     default:
+                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, null, true));
                         break;
                 }
             }

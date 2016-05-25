@@ -15,19 +15,25 @@ public class Block {
     int _globalX;
     int _globalY;
 
+    boolean _walkable;
+
     public int get_localX() { return _localX; }
     public int get_localY() { return _localY; }
+    public boolean isWalkable() { return _walkable; }
 
-    public Block(int x, int y, int globalX, int globalY, Texture texture) {
+    public Block(int x, int y, int globalX, int globalY, Texture texture, boolean walkable) {
         _localX = x;
         _localY = y;
         _globalX = globalX;
         _globalY = globalY;
         _texture = texture;
+
+        _walkable = walkable;
     }
 
     public void draw(SpriteBatch spriteBatchRef)
     {
-        spriteBatchRef.draw(_texture, _globalX, _globalY);
+        if (_texture != null)
+            spriteBatchRef.draw(_texture, _globalX, _globalY);
     }
 }

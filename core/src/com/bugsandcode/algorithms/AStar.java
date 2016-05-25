@@ -103,6 +103,7 @@ public class AStar {
         return 10 * (Math.abs(cell.get_x() - _end.get_x()) + Math.abs(cell.get_y() - _end.get_y()));
     }
 
+    // for a top left (0, 0) coord system
     public Cell getCell(int x, int y)
     {
         int index = y * _mapColCount + x;

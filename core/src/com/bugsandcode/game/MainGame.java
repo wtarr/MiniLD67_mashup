@@ -23,15 +23,13 @@ public class MainGame extends ScreenAdapter {
 	Viewport viewport;
 
 
-	private final float SCREEN_WIDTH = 640;
-	private final float SCREEN_HEIGHT = 480;
+	private final float SCREEN_WIDTH = 480;
+	private final float SCREEN_HEIGHT = 352;
 	//String level;
 
 	Level _level;
 
-    Snake _snake;
 
-    Ghoul _ghoul;
 
     public MainGame(GameLauncher game) {
         _game = game;
@@ -41,10 +39,9 @@ public class MainGame extends ScreenAdapter {
 	public void show () {
 
 		_level = new Level(30, 22);
+		_level.setCurrentGameState(State.Running);
 
-        _snake = new Snake();
 
-        _ghoul = new Ghoul(16, 16, _level);
 
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -77,18 +74,14 @@ public class MainGame extends ScreenAdapter {
 
 		_level.draw(batch);
 
-        _snake.draw(batch);
 
-        _ghoul.draw(batch);
 		//batch.draw(img, 0, 0);
 		batch.end();
 	}
 
 	public void update(float delta)
     {
-        _ghoul.update(delta);
-
-        _snake.update(delta);
+		_level.update(delta);
     }
 
 

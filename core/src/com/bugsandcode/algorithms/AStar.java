@@ -273,6 +273,8 @@ public class AStar {
 
         Cell cell = goal;
 
+        path.add(cell);
+
         if (cell.get_parent() == null && cell.equals(_start))
         {
             path.add(cell);

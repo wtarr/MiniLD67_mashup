@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.bugsandcode.algorithms.AStar;
 
@@ -16,11 +15,13 @@ import java.util.List;
  */
 public class Level {
 
-    private AssetManager _assetManager;
+    private State _currentState;
 
-    private ArrayList<Block> _map;
+    public State getCurrentGameState() { return _currentState; }
+    public void setCurrentGameState(State state) { _currentState = state; }
 
-    private AStar _astar;
+    private ArrayList<Block> _blockMap;
+    private ArrayList<Block> _walkable;
 
     private int _width;
     private int _height;
@@ -33,9 +34,23 @@ public class Level {
 
     private String _levelAsString;
 
-    public ArrayList<Block> getMap(){  return _map; }
+    public ArrayList<Block> getMap(){  return _blockMap; }
+    public ArrayList<Block> getWalkableMap(){  return _walkable; }
+
     public int getWidth() { return  _width; }
     public int getHeight() { return _height; }
+
+    public int getCellWidthHeight() { return 16; }
+
+    // Just the integer map
+    List<Integer> _mapList;
+    public List<Integer> get_mapList() { return _mapList; }
+
+    Snake _snake;
+
+    Ghoul _ghoul;
+
+    Fruit _fruit;
 
     public Level(int width, int height) {
 
@@ -45,6 +60,19 @@ public class Level {
         loadLevelAssets();
 
         buildMap(_width, height, 16);
+
+        initPlayers();
+    }
+
+    private void initPlayers() {
+        _snake = new Snake(this);
+
+        _ghoul = new Ghoul(16, 16, this);
+
+        _fruit = new Fruit();
+        _fruit.commission(getWalkableMap(), null);
+        _fruit.setActive();
+
     }
 
     private  void loadLevelAssets()
@@ -61,15 +89,16 @@ public class Level {
     private void buildMap(  int numOfcol, int numOfrow, int texturewidth)
     {
 
-        _map = new ArrayList<Block>();
+        _blockMap = new ArrayList<Block>();
+        _walkable = new ArrayList<Block>();
 
         String[] strArray = _levelAsString.split(",");
 
-        List<Integer> maplist = new ArrayList<Integer>();
+        _mapList = new ArrayList<Integer>();
 
         for (String str : strArray)
         {
-            maplist.add(Integer.parseInt(str));
+            _mapList.add(Integer.parseInt(str));
         }
 
         int row = 0;
@@ -80,7 +109,7 @@ public class Level {
             for (int x = (numOfcol - 1); x >= 0; x--)
             // for (int x = 0; x < numOfcol; x++)
             {
-                int key = maplist.get(x + row);
+                int key = _mapList.get(x + row);
 
                 if (x == 1 && y == 2)
                 {
@@ -92,22 +121,24 @@ public class Level {
 
                     // tiled exports +1 for some dumb reason
                     case 1:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockMain, false));
+                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockMain, false));
                        break;
                     case 11:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockTop, false));
+                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockTop, false));
                         break;
                     case 17:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockLeft, false));
+                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockLeft, false));
                         break;
                     case 18:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockRight, false));
+                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockRight, false));
                         break;
                     case 19:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockBottom, false));
+                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockBottom, false));
                         break;
                     default:
-                        _map.add(new Block(x, y, x * texturewidth, y * texturewidth, null, true));
+                        Block walkable = new Block(x, y, x * texturewidth, y * texturewidth, null, true);
+                        _blockMap.add(walkable);
+                        _walkable.add(walkable);
                         break;
                 }
             }
@@ -117,11 +148,59 @@ public class Level {
 
     }
 
+    public void update(float delta)
+    {
+        if (getCurrentGameState() == State.Running) {
+
+            _ghoul.update(delta);
+
+            _snake.update(delta);
+
+            checkForCollisonBetweenSnakeHeadAndGhoul();
+
+            checkForCollisonBetweenSnakeTailAndGhoul();
+
+            checkForCollisonBetweenSnakeHeadAndFruit();
+
+        }
+        else
+        {
+            //System.out.println();
+        }
+    }
+
+    private void checkForCollisonBetweenSnakeHeadAndFruit() {
+        //// TODO: 27/05/2016
+        // add points
+        // snake gets temporary invincibility
+        // snake gets extra tail
+        // fruit gets replaced
+    }
+
+    private void checkForCollisonBetweenSnakeTailAndGhoul() {
+        // // TODO: 27/05/2016
+        // if ghoul not on way home (bitten)
+        // game over
+    }
+
+    private void checkForCollisonBetweenSnakeHeadAndGhoul() {
+        // todo
+        // if snake is invincible (ghoul can be bitten)
+        //  ghoul goes home
+        // else
+        //  game over
+    }
+
     public void draw(SpriteBatch spriteBatchRef)
     {
-        for (Block block : _map)
+        for (Block block : _blockMap)
         {
             block.draw(spriteBatchRef);
         }
+
+        _snake.draw(spriteBatchRef);
+        _ghoul.draw(spriteBatchRef);
+
+        _fruit.draw(spriteBatchRef);
     }
 }

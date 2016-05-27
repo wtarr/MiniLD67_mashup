@@ -4,14 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by William on 25/05/2016.
  */
-public class Snake {
+public class Snake extends Movable {
 
     private SnakePart head;
+    private Rectangle _headBoundingRectangle;
 
     private Array<SnakePart> _snake;
 
@@ -25,10 +27,13 @@ public class Snake {
     private Texture _headTexture;
     private Texture _bodyTexture;
 
-    private float minNextMoveAllowed = 0.1f;
+    private float minNextMoveAllowed = 0.2f;
     private float current = 0;
 
-    public Snake() {
+    public Snake(Level levelRef) {
+
+        levelReference = levelRef;
+
         init();
     }
 
@@ -57,6 +62,8 @@ public class Snake {
         {
             moveSnake();
 
+            checkForCollision();
+
             current = 0;
         }
         else
@@ -66,9 +73,21 @@ public class Snake {
 
     }
 
+    private void checkForCollision() {
+
+        int nX = normalise(head.get_x());
+        int nY = normalise(head.get_y());
+
+        Block block = getBlock(nX, nY);
+
+        if (block != null & !block.isWalkable())
+        {
+            levelReference.setCurrentGameState(State.GameOver);
+        }
+
+    }
+
     private void moveSnake() {
-
-
 
         if (_currentDirection != _nextDirection) {
             _currentDirection = _nextDirection;

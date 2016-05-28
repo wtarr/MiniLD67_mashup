@@ -1,7 +1,10 @@
 package com.bugsandcode.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.bugsandcode.algorithms.AStar;
 import com.bugsandcode.algorithms.Cell;
@@ -14,7 +17,14 @@ import java.util.Random;
  * Created by William on 25/05/2016.
  */
 public class Ghoul extends Movable{
-    private Texture _textureNormal, _textureV, _textureI;
+    private Texture _textureNormal, _textureI;
+
+    private Animation _anim;
+    private Texture _animSheet;
+    private TextureRegion[] _frames;
+    private TextureRegion _currFrame;
+    float _stateTime;
+
 
     private int _x, _y, _homeX = 21, _homeY = 16, cachedStartX, cachedStartY;
 
@@ -33,9 +43,9 @@ public class Ghoul extends Movable{
     private int _currentPathHomeIndex;
 
     private float _currentVunerableTime  = 0;
-    private float _vunerableExpire = 25;
+    private float _vunerableExpire = 20;
 
-    public Ghoul(int x, int y, Level levelRef) {
+    public Ghoul(int x, int y, Level levelRef, Texture texture) {
 
         _x = x;
         _y = y;
@@ -45,14 +55,28 @@ public class Ghoul extends Movable{
 
         levelReference = levelRef;
 
-        init();
+        init(texture);
     }
 
-    private void init()
+    private void init(Texture texture)
     {
-        _textureNormal = new Texture("ghoul.png");
-        _textureV = new Texture("ghoul_v.png");
+        _textureNormal = texture;
+        //_textureV = new Texture("ghoul_v.png");
         _textureI = new Texture("ghoul_i.png");
+
+
+        _animSheet = new Texture("ghoul_v_anim.png");
+        TextureRegion[][] tmp = TextureRegion.split(_animSheet, 16, 16);
+        _frames = new TextureRegion[2];
+        int index = 0;
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 2; j++) {
+                _frames[index++] = tmp[i][j];
+            }
+        }
+        _anim = new Animation(0.2f, _frames);
+
+
 
         _boundingRectangle = new Rectangle(_x, _y, levelReference.getCellWidthHeight(), levelReference.getCellWidthHeight());
 
@@ -322,8 +346,14 @@ public class Ghoul extends Movable{
 
         if (_state == GhoulState.Normal)
             spriteBatchRef.draw(_textureNormal, _x, _y);
-        else if (_state == GhoulState.Vulnerable)
-            spriteBatchRef.draw(_textureV, _x, _y);
+        else if (_state == GhoulState.Vulnerable) {
+
+
+            _stateTime += Gdx.graphics.getDeltaTime();
+            _currFrame = _anim.getKeyFrame(_stateTime, true);
+            spriteBatchRef.draw(_currFrame, _x, _y);
+         //   spriteBatchRef.draw(_textureV, _x, _y);
+        }
         else
             spriteBatchRef.draw(_textureI, _x, _y);
     }

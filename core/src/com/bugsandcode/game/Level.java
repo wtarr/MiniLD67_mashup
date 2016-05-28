@@ -55,7 +55,7 @@ public class Level {
     // private Ghoul _ghoul;
 
     private Fruit _fruit;
-    private float fruitExpire = 20;
+    private float fruitExpire = 30;
     private float currentFruitTime = 0;
     private float minNextFruitPlacement = 2;
     private float currentFruitPlacementTime = 0;
@@ -87,13 +87,11 @@ public class Level {
 
         _ghouls = new ArrayList<Ghoul>();
 
-        Ghoul ghoul = new Ghoul(16, 48, this);
+        Ghoul ghoul = new Ghoul(16, 48, this, new Texture("ghoul.png"));
         _ghouls.add(ghoul);
 
-        ghoul = new Ghoul(608, 448, this);
+        ghoul = new Ghoul(608, 448, this, new Texture("ghoul_r.png"));
         _ghouls.add(ghoul);
-
-
 
         _fruit = new Fruit();
         _fruit.commission(getWalkableMap(), null);

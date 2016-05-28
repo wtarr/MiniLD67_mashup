@@ -14,29 +14,34 @@ import java.util.Random;
  * Created by William on 25/05/2016.
  */
 public class Ghoul extends Movable{
-    private Texture _texture;
+    private Texture _textureNormal, _textureV, _textureI;
 
-    private int _x, _y, _homeX = 15, _homeY = 11;
+    private int _x, _y, _homeX = 21, _homeY = 16, cachedStartX, cachedStartY;
 
     private float minNextMoveAllowed = 0.3f;
     private float current = 0;
 
     private Rectangle _boundingRectangle;
+    public Rectangle get_boundingRectangle() { return _boundingRectangle; }
 
     private Direction _currentDirection;
 
-    private boolean _isImmune;
-
-    public void setImmune() { _isImmune = true; }
-    public boolean isImmune(){  return _isImmune; }
+    private GhoulState _state;
+    public GhoulState getGhoulState() { return _state; }
 
     private List<Cell> _pathHome;
     private int _currentPathHomeIndex;
+
+    private float _currentVunerableTime  = 0;
+    private float _vunerableExpire = 25;
 
     public Ghoul(int x, int y, Level levelRef) {
 
         _x = x;
         _y = y;
+
+        cachedStartX = _x;
+        cachedStartY = _y;
 
         levelReference = levelRef;
 
@@ -45,18 +50,43 @@ public class Ghoul extends Movable{
 
     private void init()
     {
-        _texture = new Texture("ghoul.png");
+        _textureNormal = new Texture("ghoul.png");
+        _textureV = new Texture("ghoul_v.png");
+        _textureI = new Texture("ghoul_i.png");
 
         _boundingRectangle = new Rectangle(_x, _y, levelReference.getCellWidthHeight(), levelReference.getCellWidthHeight());
 
         setDirection();
 
-        goHome();
+        _state = GhoulState.Normal;
+
+        // goHome(); // todo for test only
+    }
+
+    public void reset()
+    {
+        _x = cachedStartX;
+        _y = cachedStartY;
+
+        _boundingRectangle.setPosition(_x, _y);
+
+        setDirection();
+
+        _state = GhoulState.Normal;
+        minNextMoveAllowed = 0.3f;
     }
 
     public void update(float delta)
     {
         //getNSWEBlocks();
+
+
+
+
+        if (_state == GhoulState.Vulnerable)
+        {
+            checkForVunerablityExpiration(delta);
+        }
 
         if (current >= minNextMoveAllowed)
         {
@@ -72,8 +102,10 @@ public class Ghoul extends Movable{
 
     private void move()
     {
-        if (!isImmune()) // on the path home
+        if (_state == GhoulState.Normal || _state == GhoulState.Vulnerable) // on the path home
         {
+
+
             checkIfDirectionRevaluationIsRequired();
             checkIfDirectionSwitchAvailable();
 
@@ -93,7 +125,7 @@ public class Ghoul extends Movable{
                 _x = _x + levelReference.getCellWidthHeight();
             }
         }
-        else
+        else if (_state == GhoulState.Immune)
         {
             // !not home
             // move along path returned from astar
@@ -113,7 +145,7 @@ public class Ghoul extends Movable{
             {
                 // back to normal
                 setDirection();
-                _isImmune = false;
+                _state = GhoulState.Normal;
                 _pathHome = null;
                 minNextMoveAllowed = 0.3f;
             }
@@ -121,6 +153,34 @@ public class Ghoul extends Movable{
 
         _boundingRectangle.setPosition(_x, _y);
     }
+
+    // *** HANDLE STATE ***
+
+    public void makeVulnerable()
+    {
+        if (_state == GhoulState.Normal)
+        {
+            _state = GhoulState.Vulnerable;
+        }
+    }
+
+    public void returnToNormalState()
+    {
+        if (_state != GhoulState.Immune)
+        {
+            _state = GhoulState.Normal;
+        }
+    }
+
+    public void handleCollisonWhileVulnerable()
+    {
+        if (_state == GhoulState.Vulnerable)
+        {
+            goHome();
+        }
+    }
+
+
 
     private void goHome()
     {
@@ -134,9 +194,25 @@ public class Ghoul extends Movable{
 
         _currentPathHomeIndex = _pathHome.size() - 1;
 
-        setImmune();
+        _state = GhoulState.Immune;
 
         minNextMoveAllowed = 0.05f;
+
+    }
+
+
+
+    public void checkForVunerablityExpiration(float delta) {
+
+        _currentVunerableTime += delta;
+
+        if (_currentVunerableTime >= _vunerableExpire) {
+
+            _state = GhoulState.Normal;
+
+            _currentVunerableTime = 0;
+
+        }
 
     }
 
@@ -243,7 +319,13 @@ public class Ghoul extends Movable{
 
     public void draw(SpriteBatch spriteBatchRef)
     {
-        spriteBatchRef.draw(_texture, _x, _y);
+
+        if (_state == GhoulState.Normal)
+            spriteBatchRef.draw(_textureNormal, _x, _y);
+        else if (_state == GhoulState.Vulnerable)
+            spriteBatchRef.draw(_textureV, _x, _y);
+        else
+            spriteBatchRef.draw(_textureI, _x, _y);
     }
 
     private void setDirection()

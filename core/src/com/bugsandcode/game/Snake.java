@@ -12,17 +12,19 @@ import com.badlogic.gdx.utils.Array;
  */
 public class Snake extends Movable {
 
-    private SnakePart head;
-    private Rectangle _headBoundingRectangle;
+    private SnakePart head; // the head
+    private Array<SnakePart> _snakeTail; // the rest
+    public Array<SnakePart> getSnakeTail() { return _snakeTail; }
 
-    private Array<SnakePart> _snake;
+    private Rectangle _headBoundingRectangle;
+    public Rectangle getHeadBoundingRectangle() { return _headBoundingRectangle; }
 
     private Direction _currentDirection;
     private Direction _nextDirection;
 
-    public void setNextDirection(Direction direction) {
-        _nextDirection = direction;
-    }
+//    public void setNextDirection(Direction direction) {
+//        _nextDirection = direction;
+//    }
 
     private Texture _headTexture;
     private Texture _bodyTexture;
@@ -45,12 +47,27 @@ public class Snake extends Movable {
         _headTexture = new Texture("head.png");
         _bodyTexture = new Texture("tail.png");
 
-        _snake = new Array<SnakePart>();
+        _snakeTail = new Array<SnakePart>();
 
         head = new SnakePart(SnakePartType.Head, 48, 16, _headTexture );
+        _headBoundingRectangle = new Rectangle(head.get_x(), head.get_y(), levelReference.getCellWidthHeight(), levelReference.getCellWidthHeight());
 
-        _snake.add(new SnakePart(SnakePartType.Body, 16, 16, _bodyTexture)); // 0
-        _snake.add(new SnakePart(SnakePartType.Body, 32, 16, _bodyTexture)); // 1
+        _snakeTail.add(new SnakePart(SnakePartType.Body, 16, 16, _bodyTexture)); // 0
+        _snakeTail.add(new SnakePart(SnakePartType.Body, 32, 16, _bodyTexture)); // 1
+
+    }
+
+    public void reset()
+    {
+        head.updatePosition(48, 16);
+
+        _snakeTail.clear();
+
+        _snakeTail.add(new SnakePart(SnakePartType.Body, 16, 16, _bodyTexture)); // 0
+        _snakeTail.add(new SnakePart(SnakePartType.Body, 32, 16, _bodyTexture)); // 1
+
+        _currentDirection = Direction.RIGHT;
+        _nextDirection = Direction.RIGHT;
 
     }
 
@@ -112,12 +129,13 @@ public class Snake extends Movable {
             head.updatePosition(head.get_x(), head.get_y() - 16);
         }
 
-        SnakePart end = _snake.removeIndex(0); // tail
+        SnakePart end = _snakeTail.removeIndex(0); // tail
 
         end.updatePosition(oldX, oldY);
 
-        _snake.add(end);
+        _snakeTail.add(end);
 
+        _headBoundingRectangle.setPosition(head.get_x(), head.get_y());
 
     }
 
@@ -125,7 +143,7 @@ public class Snake extends Movable {
     public void draw(SpriteBatch spriteBatch)
     {
         spriteBatch.draw(_headTexture, head.get_x(), head.get_y());
-        for (SnakePart part: _snake
+        for (SnakePart part: _snakeTail
              ) {
             part.draw(spriteBatch);
         }
@@ -141,6 +159,16 @@ public class Snake extends Movable {
         if (rPressed && _currentDirection != Direction.LEFT) _nextDirection = Direction.RIGHT;
         if (uPressed && _currentDirection != Direction.DOWN) _nextDirection = Direction.UP;
         if (dPressed && _currentDirection != Direction.UP) _nextDirection = Direction.DOWN;
+
+    }
+
+    public void addToTail() {
+        SnakePart tail = _snakeTail.get(0);
+
+        SnakePart newTail = new SnakePart(SnakePartType.Body, tail.get_x(), tail.get_y(), _bodyTexture);
+
+        _snakeTail.insert(0, newTail);
+
 
     }
 }

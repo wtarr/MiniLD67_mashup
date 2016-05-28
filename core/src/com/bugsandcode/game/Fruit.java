@@ -14,10 +14,9 @@ public class Fruit {
     private int _x, _y;
 
     private Rectangle _rectangle;
-    private boolean _active;
+    public Rectangle getBoundingRectangle() {return _rectangle; }
 
-
-
+    private boolean _active = false;
     private Texture _texture;
 
     public int get_x() { return _x; }
@@ -42,7 +41,9 @@ public class Fruit {
         _x = winner._globalX;
         _y = winner._globalY;
 
+        _rectangle.setPosition(_x, _y);
 
+        setActive();
     }
 
     public void draw(SpriteBatch spriteBatchRef){

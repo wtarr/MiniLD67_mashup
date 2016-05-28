@@ -17,6 +17,9 @@ public class SnakePart {
 
     private Texture _texture;
 
+    private boolean _active;
+    public void setInactive() { _active = false; }
+
     public Rectangle getBoundingRectangle() { return _boundingRectangle; }
 
     public int get_x() { return _x; }
@@ -32,19 +35,25 @@ public class SnakePart {
         _texture = texture;
 
         _boundingRectangle = new Rectangle(x, y, 16, 16);
+
+        _active = true;
     }
 
     public void updatePosition(int x, int y)
     {
-        _x = x;
-        _y = y;
+        if (_active)
+        {
+            _x = x;
+            _y = y;
 
-        _boundingRectangle.setPosition(_x, _y);
+            _boundingRectangle.setPosition(_x, _y);
+        }
     }
 
     public void draw(SpriteBatch spriteBatchRef)
     {
-        spriteBatchRef.draw(_texture, _x, _y);
+        if (_active)
+            spriteBatchRef.draw(_texture, _x, _y);
     }
 
 }

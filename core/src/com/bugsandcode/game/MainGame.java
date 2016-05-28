@@ -23,8 +23,8 @@ public class MainGame extends ScreenAdapter {
 	Viewport viewport;
 
 
-	private final float SCREEN_WIDTH = 480;
-	private final float SCREEN_HEIGHT = 352;
+	private final float SCREEN_WIDTH = 640;
+	private final float SCREEN_HEIGHT = 480;
 	//String level;
 
 	Level _level;
@@ -38,7 +38,7 @@ public class MainGame extends ScreenAdapter {
     @Override
 	public void show () {
 
-		_level = new Level(30, 22);
+		_level = new Level(40, 30);
 		_level.setCurrentGameState(State.Running);
 
 

@@ -1,4 +1,4 @@
-package com.bugsandcode.algorithms;
+package com.bugsandcode.game;
 
 /**
  * Created by William on 23/05/2016.

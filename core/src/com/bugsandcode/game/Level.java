@@ -2,6 +2,7 @@ package com.bugsandcode.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -28,12 +29,6 @@ public class Level {
     private int _width;
     private int _height;
 
-//    private Texture _textureBlockMain;
-//    private Texture _textureBlockTop;
-//    private Texture _textureBlockBottom;
-//    private Texture _textureBlockLeft;
-//    private Texture _textureBlockRight;
-
     private Texture _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p;
 
     private String _levelAsString;
@@ -52,8 +47,6 @@ public class Level {
 
     private Snake _snake;
 
-    // private Ghoul _ghoul;
-
     private Fruit _fruit;
     private float fruitExpire = 30;
     private float currentFruitTime = 0;
@@ -67,6 +60,8 @@ public class Level {
 
     private ArrayList<Ghoul> _ghouls;
 
+    private Music music;
+
     public Level(int width, int height) {
 
         _width = width;
@@ -78,6 +73,9 @@ public class Level {
 
         initPlayers();
 
+        music = Gdx.audio.newMusic(Gdx.files.internal("ldmini67.wav"));
+        music.setLooping(true);
+        music.play();
 
     }
 
@@ -104,11 +102,6 @@ public class Level {
     {
         FileHandle fh = Gdx.files.internal("level.txt");
         _levelAsString = fh.readString();
-        //_textureBlockMain = new Texture("block.png");
-        //_textureBlockBottom = new Texture("block_bottom.png");
-        //_textureBlockLeft = new Texture("block_left.png");
-        //_textureBlockRight = new Texture("block_right.png");
-        //_textureBlockTop = new Texture("block_top.png");
 
         _a = new Texture("map/a.png");
         _b = new Texture("map/b.png");

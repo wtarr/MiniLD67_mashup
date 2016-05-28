@@ -1,4 +1,4 @@
-package com.bugsandcode.algorithms;
+package com.bugsandcode.game;
 
 import java.util.ArrayList;
 import java.util.Comparator;

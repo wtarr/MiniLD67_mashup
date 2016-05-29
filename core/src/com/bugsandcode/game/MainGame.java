@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainGame extends ScreenAdapter {
+
 	GameLauncher _game;
 
     SpriteBatch batch;
@@ -29,18 +30,23 @@ public class MainGame extends ScreenAdapter {
 
 	Level _level;
 
+	public MainGame(GameLauncher game)
+	{
+		_game = game;
+		batch = new SpriteBatch();
+	}
 
-
-    public MainGame(GameLauncher game) {
-        _game = game;
-    }
+	// FOR FUTURE REFERENCE - SUPER IMPORTANT OR SET SCREEN WONT RENDER!!!!!
+	@Override
+	public void resize(int width, int height) {
+		viewport.update(width, height);
+	}
 
     @Override
 	public void show () {
 
 		_level = new Level(40, 30);
 		_level.setCurrentGameState(State.Running);
-
 
 
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -51,7 +57,7 @@ public class MainGame extends ScreenAdapter {
 		viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
 		viewport.apply();
 
-		batch = new SpriteBatch();
+		//batch = new SpriteBatch();
 		//img = new Texture("badlogic.jpg");
 
 		//FileHandle file = Gdx.files.internal("level.txt");

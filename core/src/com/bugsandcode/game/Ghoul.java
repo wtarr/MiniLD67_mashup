@@ -182,6 +182,7 @@ public class Ghoul extends Movable{
     {
         if (_state == GhoulState.Normal)
         {
+            _currentVunerableTime = 0;
             _state = GhoulState.Vulnerable;
         }
     }

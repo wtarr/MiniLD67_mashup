@@ -9,6 +9,6 @@ public class GameLauncher extends Game {
 
     @Override
     public void create() {
-        setScreen(new MainGame(this));
+        setScreen(new MenuScreen(this));
     }
 }

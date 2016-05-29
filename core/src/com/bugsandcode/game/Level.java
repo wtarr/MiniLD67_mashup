@@ -54,7 +54,10 @@ public class Level {
     private float currentFruitPlacementTime = 0;
     private final float FRUITPOINTS = 20;
 
+    private int _cachedHighScore = 0;
     private int _score = 0;
+    private boolean _doDisplayHighScore = false;
+
     private GlyphLayout _layout = new GlyphLayout();
     private BitmapFont _bitmapFont;
 
@@ -75,6 +78,7 @@ public class Level {
 
         music = Gdx.audio.newMusic(Gdx.files.internal("ldmini67.wav"));
         music.setLooping(true);
+        music.setVolume(0.3f);
         music.play();
 
     }
@@ -224,18 +228,6 @@ public class Level {
                         _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _p, false));
                         break;
 
-//                    case 11:
-//                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockTop, false));
-//                        break;
-//                    case 17:
-//                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockLeft, false));
-//                        break;
-//                    case 18:
-//                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockRight, false));
-//                        break;
-//                    case 19:
-//                        _blockMap.add(new Block(x, y, x * texturewidth, y * texturewidth, _textureBlockBottom, false));
-//                        break;
                     default:
                         Block walkable = new Block(x, y, x * texturewidth, y * texturewidth, null, true);
                         _blockMap.add(walkable);
@@ -319,6 +311,8 @@ public class Level {
 
     private void reset() {
         _fruit.setInactive();
+
+        _doDisplayHighScore = false;
 
         for (Ghoul g: _ghouls)
         {
@@ -434,10 +428,17 @@ public class Level {
 
         _bitmapFont.draw(spriteBatchRef, scoreText, Gdx.graphics.getWidth() / 2 - _layout.width / 2, Gdx.graphics.getHeight() - ((getCellWidthHeight() * 5)/2) );
 
-        if (_currentState == State.GameOver)
-        {
+        if (_currentState == State.GameOver) {
+
+            if (_score > _cachedHighScore)
+            {
+                _cachedHighScore = _score;
+                _doDisplayHighScore = true;
+            }
+
             String gameOver = "Game Over";
             String reset = "Press R to reset!";
+            String newHiscore = "You set a new high score, awesome!";
 
             _layout.setText(_bitmapFont, gameOver);
             _bitmapFont.setColor(Color.RED);
@@ -447,7 +448,15 @@ public class Level {
             _layout.setText(_bitmapFont, reset);
             _bitmapFont.setColor(Color.RED);
 
-            _bitmapFont.draw(spriteBatchRef, reset, Gdx.graphics.getWidth() / 2 - _layout.width / 2, Gdx.graphics.getHeight() - ((getCellWidthHeight() * 10)/2) );
+            _bitmapFont.draw(spriteBatchRef, reset, Gdx.graphics.getWidth() / 2 - _layout.width / 2, Gdx.graphics.getHeight() - ((getCellWidthHeight() * 12)/2) );
+
+            if (_doDisplayHighScore)
+            {
+                _layout.setText(_bitmapFont, newHiscore);
+                _bitmapFont.setColor(Color.BLUE);
+
+                _bitmapFont.draw(spriteBatchRef, newHiscore, Gdx.graphics.getWidth() / 2 - _layout.width / 2, Gdx.graphics.getHeight() - ((getCellWidthHeight() * 10)/2) );
+            }
 
         }
 

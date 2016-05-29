@@ -76,7 +76,7 @@ public class Level {
 
         initPlayers();
 
-        music = Gdx.audio.newMusic(Gdx.files.internal("ldmini67.wav"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("ldmini67.ogg"));
         music.setLooping(true);
         music.setVolume(0.3f);
         music.play();
